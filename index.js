@@ -88,7 +88,10 @@ module.exports = function (root, options) {
     if (!hidden && leadingDot(path)) return
 
     var file = yield* get(path)
-    if (!file) return // 404
+    if (!file) { // 404
+        yield* next;
+        return;
+    }
 
     // proper method handling
     var method = req.method
