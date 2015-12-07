@@ -61,17 +61,11 @@ module.exports = function (root, options) {
   function* serve(next) {
     this.fileServer = new FileServer(this)
 
-    yield* next
-
-    // response is handled
-    if (this.response.body) return
-    if (this.response.status !== 404) return
-
-    yield* send(this)
+    yield* send(this, null, next);
   }
 
   // utility
-  function* send(ctx, path) {
+  function* send(ctx, path, next) {
     var req = ctx.request
     var res = ctx.response
 
