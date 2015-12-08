@@ -196,6 +196,7 @@ module.exports = function (root, options) {
       type: mime.contentType(extname(path)) || 'application/octet-stream',
     }
 
+    return file; // No gzipping here
     if (!compressible(file.type)) return file
 
   // if we can compress this file, we create a .gz
