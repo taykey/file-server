@@ -181,8 +181,8 @@ module.exports = function (root, options) {
 
   // get the file from cache if possible
   function* get(path) {
-    var val = cache[path]
-    if (val && val.compress && (yield fs.exists(val.compress.path))) return val
+    //var val = cache[path]
+    //if (val && val.compress && (yield fs.exists(val.compress.path))) return val
 
     var stats = yield fs.stat(path).catch(ignoreStatError)
     // we don't want to cache 404s because
@@ -190,23 +190,13 @@ module.exports = function (root, options) {
     if (!stats || !stats.isFile()) return
     stats.path = path
 
-    var file = cache[path] = {
+    var file = {
       stats: stats,
       etag: '"' + (yield hash(path, algorithm)).toString(encoding) + '"',
       type: mime.contentType(extname(path)) || 'application/octet-stream',
     }
 
     if (!compressible(file.type)) return file
-
-    // if we can compress this file, we create a .gz
-    var compress = file.compress = {
-      path: path + '.gz'
-    }
-
-    // delete old .gz files in case the file has been updated
-    try {
-      yield fs.unlink(compress.path)
-    } catch (err) {}
 
     // save to a random file name first
     var tmp = path + '.' + random() + '.gz'
@@ -227,9 +217,6 @@ module.exports = function (root, options) {
     if (compress.stats.size > stats.size) {
       delete file.compress
       yield fs.unlink(tmp)
-    } else {
-      // otherwise, rename to the correct path
-      yield fs.rename(tmp, compress.path)
     }
 
     return file
