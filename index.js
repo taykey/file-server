@@ -198,6 +198,11 @@ module.exports = function (root, options) {
 
     if (!compressible(file.type)) return file
 
+  // if we can compress this file, we create a .gz
+    var compress = file.compress = {
+      path: path + '.gz'
+    }
+
     // save to a random file name first
     var tmp = path + '.' + random() + '.gz'
     yield function (done) {
